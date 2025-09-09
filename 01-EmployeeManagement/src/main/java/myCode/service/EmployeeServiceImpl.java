@@ -2,7 +2,9 @@ package myCode.service;
 
 import lombok.RequiredArgsConstructor;
 import myCode.dto.EmployeeDto;
+import myCode.dto.createdDto.EmployeeCreatedDto;
 import myCode.exception.ResourceNotFound;
+import myCode.mapstruct.EmployeeMapper;
 import myCode.model.Employee;
 import myCode.repository.EmployeeRepo;
 import org.modelmapper.ModelMapper;
@@ -18,6 +20,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     private final EmployeeRepo employeeRepo;
     private final ModelMapper modelMapper;
+    private final EmployeeMapper employeeMapper;
 
     private EmployeeDto mapToDto(Employee emp) {
         return EmployeeDto.builder()
@@ -51,10 +54,15 @@ public class EmployeeServiceImpl implements EmployeeService{
         return ResponseEntity.ok(modelMapper.map(employee,EmployeeDto.class));
     }
 
-    public ResponseEntity<EmployeeDto> save(Employee employee){
-        Employee emp = employeeRepo.save(employee);
-//      return ResponseEntity.status(HttpStatus.CREATED).body(mapToDto(emp));   //This is also valid
-        return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(emp,EmployeeDto.class));
+    public EmployeeDto save(EmployeeCreatedDto employeeCreatedDto){
+        Employee emp =employeeMapper.toEntity(employeeCreatedDto);
+        return employeeMapper.toDto(employeeRepo.save(emp));
+
+    }
+
+    @Override
+    public ResponseEntity<EmployeeDto> update(Employee employee) {
+        return null;
     }
 
     public ResponseEntity<EmployeeDto> update(Integer id,Employee employee){

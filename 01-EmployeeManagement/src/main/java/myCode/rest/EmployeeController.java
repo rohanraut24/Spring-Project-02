@@ -2,10 +2,13 @@ package myCode.rest;
 
 import lombok.RequiredArgsConstructor;
 import myCode.dto.EmployeeDto;
+import myCode.dto.createdDto.EmployeeCreatedDto;
+import myCode.mapstruct.EmployeeMapper;
 import myCode.model.Employee;
 import myCode.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import myCode.dto.EmployeeDto;
 
 import java.util.List;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final EmployeeMapper employeeMapper;
 
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getAllEmp(){
@@ -26,7 +30,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDto> save(@RequestBody Employee emp){
-        return employeeService.save(emp);
+    public EmployeeDto save(@RequestBody EmployeeCreatedDto employeeCreatedDto){
+        return employeeService.save(employeeCreatedDto);
     }
 }
