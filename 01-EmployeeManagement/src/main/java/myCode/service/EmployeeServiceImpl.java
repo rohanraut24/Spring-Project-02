@@ -3,7 +3,8 @@ package myCode.service;
 import lombok.RequiredArgsConstructor;
 import myCode.dto.EmployeeDto;
 import myCode.dto.createdDto.EmployeeCreatedDto;
-import myCode.exception.ResourceNotFound;
+import myCode.dto.updatedDto.EmployeeUpdatedDto;
+//import myCode.exception.ResourceNotFound;
 import myCode.mapstruct.EmployeeMapper;
 import myCode.model.Employee;
 import myCode.repository.EmployeeRepo;
@@ -61,8 +62,13 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public ResponseEntity<EmployeeDto> update(Employee employee) {
-        return null;
+    public ResponseEntity<EmployeeDto> update(Integer id , EmployeeUpdatedDto employeeUpdatedDto) {
+//        Employee emp =employeeRepo.findById(id).orElseThrow(()-> new ResourceNotFound("Employee not found of id "+id));
+        Employee emp =employeeRepo.findById(id).orElseThrow(()-> new RuntimeException("Employee not found of id "+id));
+
+        employeeMapper.updateFromDto(employeeUpdatedDto,emp);
+        employeeRepo.save(emp);
+        return ResponseEntity.ok(employeeMapper.toDto(emp));
     }
 
     public ResponseEntity<EmployeeDto> update(Integer id,Employee employee){

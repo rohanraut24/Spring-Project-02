@@ -1,7 +1,7 @@
 package myCode.service;
 import myCode.dto.EmployeeDto;
 import myCode.dto.createdDto.EmployeeCreatedDto;
-import myCode.model.Employee;
+import myCode.dto.updatedDto.EmployeeUpdatedDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,5 +13,5 @@ public interface EmployeeService {
 
     public EmployeeDto save(EmployeeCreatedDto employeeCreatedDto);
 
-    public ResponseEntity<EmployeeDto> update(Employee employee);
+    public ResponseEntity<EmployeeDto> update(Integer id, EmployeeUpdatedDto employeeUpdatedDto);
 }
