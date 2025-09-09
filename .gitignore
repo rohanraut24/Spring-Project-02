@@ -1,7 +1,7 @@
-# Compiled class file
+# Compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files
@@ -19,6 +19,62 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+######################
+# Build / Output dirs
+######################
+target/
+build/
+out/
+
+######################
+# IDE files
+######################
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+######################
+# OS-specific files
+######################
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+######################
+# Environment / Local configs
+######################
+*.env
+*.local
+application-*.yml
+application-*.properties
+
+######################
+# Maven Wrapper
+######################
+.mvn/wrapper/maven-wrapper.jar
+
+######################
+# Gradle Wrapper
+######################
+.gradle/
+!gradle-wrapper.jar
