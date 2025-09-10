@@ -8,12 +8,15 @@ import myCode.dto.updatedDto.EmployeeUpdatedDto;
 import myCode.mapstruct.EmployeeMapper;
 import myCode.model.Employee;
 import myCode.repository.EmployeeRepo;
+import org.aspectj.weaver.patterns.HasMemberTypePatternForPerThisMatching;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +66,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public ResponseEntity<EmployeeDto> update(Integer id , EmployeeUpdatedDto employeeUpdatedDto) {
-//        Employee emp =employeeRepo.findById(id).orElseThrow(()-> new ResourceNotFound("Employee not found of id "+id));
         Employee emp =employeeRepo.findById(id).orElseThrow(()-> new RuntimeException("Employee not found of id "+id));
 
         employeeMapper.updateFromDto(employeeUpdatedDto,emp);
@@ -71,6 +73,33 @@ public class EmployeeServiceImpl implements EmployeeService{
         return ResponseEntity.ok(employeeMapper.toDto(emp));
     }
 
+    @Override
+    public ResponseEntity<EmployeeDto> putMethod(Integer id, EmployeeUpdatedDto employeeUpdatedDto) {
+        Employee emp = employeeRepo.findById(id).orElseThrow(()->new RuntimeException("Employee not found biro"));
+        employeeMapper.overwriteFromDto(employeeUpdatedDto,emp);
+        employeeRepo.save(emp);
+        return ResponseEntity.ok(employeeMapper.toDto(emp));
+    }
+
+    @Override
+    public ResponseEntity<?> deleteById(Integer id) {
+
+        Map<String,Object> hm = new HashMap<>();
+        if(!employeeRepo.existsById(id)){
+            hm.put("Message","Bro! What are you doing at least see in database,Employee of this Id is not present");
+            hm.put("Status",404);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(hm);
+        }
+        else{
+            employeeRepo.deleteById(id);
+            hm.put("Message","Employee is fired");
+            hm.put("Status",200);
+            return ResponseEntity.ok(hm);
+
+        }
+    }
+
+//  Only for Practice
     public ResponseEntity<EmployeeDto> update(Integer id,Employee employee){
         Employee emp = employeeRepo.findById(id).orElseThrow(()->new RuntimeException("Employee not exist with id "+id));
         emp.setEmail(employee.getEmail());

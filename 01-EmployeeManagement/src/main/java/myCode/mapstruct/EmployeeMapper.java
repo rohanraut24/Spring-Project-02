@@ -17,6 +17,11 @@ public interface EmployeeMapper {
 
     Employee toEntity(EmployeeCreatedDto employeeCreatedDto);
 
+    // PUT → overwrite everything (including nulls)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void overwriteFromDto(EmployeeUpdatedDto dto, @MappingTarget Employee entity);
+
+    // PATCH → ignore nulls (partial update)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromDto(EmployeeUpdatedDto empDto , @MappingTarget Employee emp);
 }
