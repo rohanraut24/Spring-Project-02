@@ -4,6 +4,7 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rohan.dto.request.CreateUserDto;
+import rohan.dto.request.UpdateDto;
 import rohan.dto.response.ResponseUserDto;
 import rohan.model.Users;
 import rohan.service.UserService;
@@ -20,9 +21,15 @@ public class UserController {
     public List<Users> getList(){
         return userService.getList();
     }
+
     @PostMapping("/users")
     public ResponseUserDto createUser(@RequestBody CreateUserDto createUserDto){
         return userService.create(createUserDto);
+    }
+
+    @PatchMapping("/users/{id}")
+    public ResponseUserDto UpdateUser(@PathVariable Long id, @RequestBody UpdateDto updateDto){
+        return userService.update(id,updateDto);
     }
 
 }
