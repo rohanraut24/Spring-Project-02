@@ -1,16 +1,15 @@
-package rohan.dto.request;
+package rohan.dto.user.request;
 
-import jakarta.validation.Valid;
 import lombok.*;
 import rohan.model.Users;
 
 @Builder
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "password")
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdateDto {
+public class UserCreateDto {
     private String username;
     private String password;
     private String email;

@@ -1,16 +1,15 @@
-package rohan.dto.request;
+package rohan.dto.user.request;
 
-import jakarta.persistence.*;
 import lombok.*;
 import rohan.model.Users;
 
 @Builder
 @AllArgsConstructor
-@ToString(exclude = "password")
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateUserDto {
+public class UserUpdateDto {
     private String username;
     private String password;
     private String email;

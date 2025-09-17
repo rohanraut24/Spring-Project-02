@@ -1,4 +1,4 @@
-package rohan.dto.response;
+package rohan.dto.user.response;
 import lombok.*;
 import rohan.model.Users;
 
