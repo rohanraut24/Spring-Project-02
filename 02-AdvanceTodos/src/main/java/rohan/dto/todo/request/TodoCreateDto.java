@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class todoCreateDto {
+public class TodoCreateDto {
     private String title;
     private String description;
     private boolean completed;
-    private Long user_id;
 }

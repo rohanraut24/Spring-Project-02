@@ -1,5 +1,6 @@
 package rohan.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class Todos {
 
     @ManyToOne()
     @JoinColumn(name ="user_id", nullable = false)
+    @JsonIgnore  //solve issue of cause infinite nesting problem
     private Users user;
 
     @Column
@@ -31,12 +33,14 @@ public class Todos {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false ,updatable = false)
+    @Column(nullable = false ,updatable = false ,insertable = false)
 //    @CreationTimestamp  //Don't need this because I already declared it in database
-    private LocalDateTime createdAt;
+    private LocalDateTime created_at;
 
-    @Column(nullable = false)
+    @Column(name="updated_at",nullable = false ,insertable = false)
 //    @UpdateTimestamp //Don't need this because I already declared it in database
 //    ADD COLUMN updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;  //In DB
-    private LocalDateTime updatedAt;
+    //Updated through db is not working properly
+    @UpdateTimestamp
+    private LocalDateTime updated_at;
 }
