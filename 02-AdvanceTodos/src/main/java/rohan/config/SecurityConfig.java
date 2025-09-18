@@ -2,6 +2,7 @@ package rohan.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -20,13 +21,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth ->auth
-//                        .requestMatchers("/login","/register").permitAll()
-//                        .anyRequest().authenticated()
-//
-//                )
-                .httpBasic(httpBasic ->{});
+                .csrf(csrf -> csrf.disable());
+//                .authorizeHttpRequests(auth -> auth
+//                                .requestMatchers(HttpMethod.PUT, "/api/**")
+//                                .requestMatchers(HttpMethod.PATCH, "/api/**")
+//                                .requestMatchers(HttpMethod.GET, "/api/**")
+//                                .permitAll()
+//                        // other matchers...
+//                );
         return http.build();
     }
 }
