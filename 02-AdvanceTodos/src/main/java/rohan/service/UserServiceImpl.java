@@ -81,9 +81,6 @@ public class UserServiceImpl implements UserService{
         if (updateUserRequest.getEmail() != null) {
             existingUser.setEmail(updateUserRequest.getEmail());
         }
-        if (updateUserRequest.getPassword() != null) {
-            existingUser.setPassword(encoder.encode(updateUserRequest.getPassword()));
-        }
 
         Users savedUser = userRepo.save(existingUser);
 

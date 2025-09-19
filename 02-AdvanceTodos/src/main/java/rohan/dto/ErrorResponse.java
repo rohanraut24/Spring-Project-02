@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-class ErrorResponse {
+public class ErrorResponse {
     private String message;
     private int status;
     private long timestamp;
