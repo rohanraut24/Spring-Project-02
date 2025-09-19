@@ -5,12 +5,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rohan.dto.todo.reponse.ResponseTodoDto;
-import rohan.dto.todo.request.TodoCreateDto;
-import rohan.dto.todo.request.UpdateTodoDto;
+import rohan.dto.todo.reponse.TodoResponse;
+import rohan.dto.todo.request.TodoRequest;
+import rohan.dto.todo.request.UpdateTodoRequest;
 import rohan.dto.user.request.UserCreateDto;
-import rohan.dto.user.request.UserUpdateDto;
-import rohan.dto.user.response.ResponseUserDto;
+import rohan.dto.user.request.UpdateUserRequest;
+import rohan.dto.user.response.UserResponse;
 import rohan.exception.TodoNotFound;
 import rohan.exception.UserNotFound;
 import rohan.model.Todos;
@@ -35,58 +35,58 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<ResponseTodoDto> getTodos(Long id) {
+    public List<TodoResponse> getTodos(Long id) {
         Users user = userRepo.findById(id).orElseThrow(()->new UserNotFound("User not found"));
         return user.getUserTodos()
                 .stream()
-                .map(todos->modelMapper.map(todos,ResponseTodoDto.class))
+                .map(todos->modelMapper.map(todos, TodoResponse.class))
                 .toList();
     }
 
     @Override
-    public ResponseUserDto create(UserCreateDto userCreateDto) {
+    public UserResponse create(UserCreateDto userCreateDto) {
         Users user = modelMapper.map(userCreateDto,Users.class);
         user.setPassword(encoder.encode(userCreateDto.getPassword()));
-        return modelMapper.map(userRepo.save(user),ResponseUserDto.class);
+        return modelMapper.map(userRepo.save(user), UserResponse.class);
     }
 
     @Override
-    public ResponseTodoDto createTodo(Long id, TodoCreateDto todoCreateDto) {
+    public TodoResponse createTodo(Long id, TodoRequest todoRequest) {
         Users user = userRepo.findById(id).orElseThrow(()->new UserNotFound("User not found"));
 
-        Todos newTodo = modelMapper.map(todoCreateDto,Todos.class);
+        Todos newTodo = modelMapper.map(todoRequest,Todos.class);
         newTodo.setUser(user);
 
         user.getUserTodos().add(newTodo);
         userRepo.save(user);
 
-        return modelMapper.map(newTodo,ResponseTodoDto.class);
+        return modelMapper.map(newTodo, TodoResponse.class);
     }
 
     @Override
-    public ResponseEntity<String> todoUpdate(Long id, UpdateTodoDto updateTodoDto) {
+    public ResponseEntity<String> todoUpdate(Long id, UpdateTodoRequest updateTodoRequest) {
         Todos todo = todoRepo.findById(id).orElseThrow(()->new TodoNotFound("Todo not found with this id"));
-        modelMapper.map(updateTodoDto,todo);
+        modelMapper.map(updateTodoRequest,todo);
         todoRepo.save(todo);
         return  ResponseEntity.ok("Updated successfully");
     }
 
     @Override
-    public ResponseUserDto update(Long id, UserUpdateDto userUpdateDto) {
+    public UserResponse update(Long id, UpdateUserRequest updateUserRequest) {
         Users existingUser = userRepo.findById(id).orElseThrow(() -> new UserNotFound("User not found for id " + id));
 
-        if (userUpdateDto.getUsername()!= null) {
-            existingUser.setUsername(userUpdateDto.getUsername());
+        if (updateUserRequest.getUsername()!= null) {
+            existingUser.setUsername(updateUserRequest.getUsername());
         }
-        if (userUpdateDto.getEmail() != null) {
-            existingUser.setEmail(userUpdateDto.getEmail());
+        if (updateUserRequest.getEmail() != null) {
+            existingUser.setEmail(updateUserRequest.getEmail());
         }
-        if (userUpdateDto.getPassword() != null) {
-            existingUser.setPassword(encoder.encode(userUpdateDto.getPassword()));
+        if (updateUserRequest.getPassword() != null) {
+            existingUser.setPassword(encoder.encode(updateUserRequest.getPassword()));
         }
 
         Users savedUser = userRepo.save(existingUser);
 
-        return modelMapper.map(savedUser, ResponseUserDto.class);
+        return modelMapper.map(savedUser, UserResponse.class);
     }
 }

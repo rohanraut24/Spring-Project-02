@@ -5,9 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UpdateTodoDto {
+public class UpdateTodoRequest {
     private String title;
     private String description;
     private boolean completed;

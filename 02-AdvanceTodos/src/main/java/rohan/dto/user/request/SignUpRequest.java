@@ -5,25 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import rohan.model.Users;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString(exclude = "password")
-public class RegisterUserDto {
-    @NotBlank
+public class SignUpRequest {
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email")
     private String email;
 
-    @Size(min =4 ,message ="password should be min 4 digit or alphabet")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Password should contain only letters and digits")
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     private String password;
 
-    @NotNull
-    private Users.UserRole userRole;
+    private String role = "USER";
 }

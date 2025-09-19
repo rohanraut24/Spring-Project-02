@@ -1,4 +1,16 @@
 package rohan.dto;
 
-public class ErrorResponse {
+import lombok.Data;
+
+
+@Data
+class ErrorResponse {
+    private String message;
+    private int status;
+    private long timestamp;
+
+    public ErrorResponse(String message) {
+        this.message = message;
+        this.timestamp = System.currentTimeMillis();
+    }
 }

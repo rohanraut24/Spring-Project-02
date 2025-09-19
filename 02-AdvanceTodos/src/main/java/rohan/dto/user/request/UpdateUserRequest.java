@@ -1,5 +1,6 @@
 package rohan.dto.user.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import rohan.model.Users;
 
@@ -9,9 +10,10 @@ import rohan.model.Users;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserUpdateDto {
+public class UpdateUserRequest {
     private String username;
-    private String password;
+
+    @Email(message="Email should be valid")
     private String email;
-    private Users.UserRole userRole;
+
 }

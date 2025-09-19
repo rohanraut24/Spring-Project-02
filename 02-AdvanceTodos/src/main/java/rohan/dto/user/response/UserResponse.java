@@ -8,7 +8,7 @@ import rohan.model.Users;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ResponseUserDto {
+public class UserResponse {
     private Long id;
     private String username;
     private String email;
