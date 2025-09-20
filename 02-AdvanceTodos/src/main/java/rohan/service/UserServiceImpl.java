@@ -1,4 +1,4 @@
-package rohan.service.impl;
+package rohan.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import rohan.dto.*;
 import rohan.dto.user.request.ChangePasswordRequest;
 import rohan.dto.user.request.SignUpRequest;
 import rohan.dto.user.request.UpdateUserRequest;
+import rohan.dto.user.response.UserResponse;
 import rohan.exception.ResourceNotFoundException;
 import rohan.exception.BadRequestException;
 import rohan.mapper.UserMapper;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepo userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -47,11 +48,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse registerUser(SignUpRequest signUpRequest) {
-        return null;
-    }
-
-    @Override
     public UserResponse getUserById(Long id) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -70,16 +66,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::userToUserResponse)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public ApiResponse updateUser(Long id, UpdateUserRequest updateRequest, String currentUsername) {
-        return null;
-    }
-
-    @Override
-    public ApiResponse changePassword(String username, ChangePasswordRequest changePasswordRequest) {
-        return null;
     }
 
     @Override
