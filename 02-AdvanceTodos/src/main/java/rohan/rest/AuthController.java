@@ -1,5 +1,4 @@
 package rohan.rest;
-
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,12 +8,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.annotation.*;
+import rohan.dto.user.request.LoginRequest;
+import rohan.dto.user.request.SignUpRequest;
+import rohan.dto.ApiResponse;
 import rohan.dto.ErrorResponse;
 import rohan.dto.JwtResponse;
-import org.springframework.web.bind.annotation.*;
-
-import rohan.dto.user.request.LoginRequest;
 import rohan.security.CustomUserDetails;
 import rohan.security.JwtUtil;
 import rohan.service.UserService;
@@ -72,4 +71,15 @@ public class AuthController {
                     .body(new ErrorResponse("Invalid username or password"));
         }
     }
+
+//    @PostMapping("/register")
+//    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+//        try {
+//            ApiResponse response = userService.registerUser(signUpRequest);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest()
+//                    .body(new ErrorResponse(e.getMessage()));
+//        }
+//    }
 }

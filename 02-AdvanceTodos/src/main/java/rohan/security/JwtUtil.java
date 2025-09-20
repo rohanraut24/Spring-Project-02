@@ -1,5 +1,5 @@
-package rohan.security;
 
+package rohan.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -7,11 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import java.util.function.Function;
 import java.util.Date;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 @Slf4j
@@ -20,7 +19,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:86400000}")
     private int jwtExpiration;
 
     public String generateToken(String username) {
@@ -45,6 +44,7 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
     public Long extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
@@ -79,7 +79,13 @@ public class JwtUtil {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try {
+            final String username = extractUsername(token);
+            return userDetails != null ?
+                    (username.equals(userDetails.getUsername()) && !isTokenExpired(token)) :
+                    !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
