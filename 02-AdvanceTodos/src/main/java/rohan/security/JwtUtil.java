@@ -1,12 +1,16 @@
-
 package rohan.security;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +25,12 @@ public class JwtUtil {
 
     @Value("${jwt.expiration:86400000}")
     private int jwtExpiration;
+
+    private Key getSigningKey() {
+        // secretKey must be Base64 encoded in your application.properties
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -37,11 +47,11 @@ public class JwtUtil {
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .claims(claims)  // Updated from setClaims()
+                .subject(subject)  // Updated from setSubject()
+                .issuedAt(new Date(System.currentTimeMillis()))  // Updated from setIssuedAt()
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))  // Updated from setExpiration()
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -71,7 +81,11 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return Jwts.parser()  // Updated from parserBuilder()
+                .verifyWith((SecretKey) getSigningKey())  // Updated from setSigningKey()
+                .build()
+                .parseSignedClaims(token)  // Updated from parseClaimsJws()
+                .getPayload();  // Updated from getBody()
     }
 
     private Boolean isTokenExpired(String token) {
@@ -85,6 +99,7 @@ public class JwtUtil {
                     (username.equals(userDetails.getUsername()) && !isTokenExpired(token)) :
                     !isTokenExpired(token);
         } catch (Exception e) {
+            log.error("Token validation failed: {}", e.getMessage());
             return false;
         }
     }

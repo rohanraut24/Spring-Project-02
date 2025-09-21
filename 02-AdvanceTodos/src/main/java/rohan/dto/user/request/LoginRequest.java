@@ -11,7 +11,6 @@ public class LoginRequest {
     @NotBlank(message = "Username is required")
     private String username;
 
-    @Size(min = 4, message = "password should be min 4 digit or alphabet")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Password should contain only letters and digits")
+
     private String password;
 }

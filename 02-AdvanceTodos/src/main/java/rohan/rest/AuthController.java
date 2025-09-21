@@ -72,14 +72,14 @@ public class AuthController {
         }
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-//        try {
-//            ApiResponse response = userService.registerUser(signUpRequest);
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest()
-//                    .body(new ErrorResponse(e.getMessage()));
-//        }
-//    }
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        try {
+            ApiResponse response = userService.registerUser(signUpRequest);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
 }

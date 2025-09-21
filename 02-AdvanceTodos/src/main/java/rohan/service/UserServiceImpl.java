@@ -43,7 +43,8 @@ public class UserServiceImpl implements UserService {
         Users user = userMapper.signUpRequestToUser(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
-        userRepository.save(user);
+        Users user1 =userRepository.save(user);
+//        System.out.println("Errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrror check");
         return new ApiResponse(true, "User registered successfully!");
     }
 

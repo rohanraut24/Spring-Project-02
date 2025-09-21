@@ -25,4 +25,10 @@ public interface UserService {
     ApiResponse deleteUser(Long id, String currentUsername);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
+
+//    List<Users> getList();
+//    UserResponse create(UserCreateDto userCreateDto);
+//    TodoResponse createTodo(Long id, TodoRequest todoRequest);
+//    ResponseEntity<String> todoUpdate(Long id, UpdateTodoRequest updateTodoRequest);
+//    UserResponse update(Long id, UpdateUserRequest updateUserRequest);
 }

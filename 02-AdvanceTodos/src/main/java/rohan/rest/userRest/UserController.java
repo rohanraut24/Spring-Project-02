@@ -2,6 +2,7 @@ package rohan.rest.userRest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rohan.dto.todo.reponse.TodoResponse;
 import rohan.dto.todo.request.TodoRequest;
@@ -20,32 +21,38 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping()
-    public List<Users> getList(){
-        return userService.getList();
-    }
+//    @GetMapping()
+//    public List<Users> getList(){
+//        return userService.getList();
+//    }
+//
+//    @GetMapping("/todos/{id}")
+//    public List<Users> getTos(@PathVariable Long id) {
+//        return userService.getList();
+//    }
+//
+//    @PostMapping()
+//    public UserResponse createUser(@RequestBody UserCreateDto userCreateDto){
+//        return userService.create(userCreateDto);
+//    }
 
-    @GetMapping("/todos/{id}")
-    public List<Users> getTos(@PathVariable Long id) {
-        return userService.getList();
-    }
-
-    @PostMapping()
-    public UserResponse createUser(@RequestBody UserCreateDto userCreateDto){
-        return userService.create(userCreateDto);
-    }
-
-    @PostMapping("/todos/{id}")
-    public TodoResponse createTodo(@PathVariable Long id, @RequestBody TodoRequest todoRequest){
-        return userService.createTodo(id, todoRequest);
-    }
-    @PutMapping("/todos/{id}")
-    public ResponseEntity<String> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest updateTodoRequest){
-        return  userService.todoUpdate(id, updateTodoRequest);
-    }
-
-    @PatchMapping("/{id}")  
-    public UserResponse UpdateUser(@PathVariable Long id, @RequestBody UpdateUserRequest updateUserRequest){
-        return userService.update(id, updateUserRequest);
-    }
+//    @PostMapping("/todos/{id}")
+//    public TodoResponse createTodo(@PathVariable Long id, @RequestBody TodoRequest todoRequest){
+//        return userService.createTodo(id, todoRequest);
+//    }
+//    @PutMapping("/todos/{id}")
+//    public ResponseEntity<String> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest updateTodoRequest){
+//        return  userService.todoUpdate(id, updateTodoRequest);
+//    }
+//
+//    @PatchMapping("/{id}")
+//    public UserResponse UpdateUser(@PathVariable Long id, @RequestBody UpdateUserRequest updateUserRequest){
+//        return userService.update(id, updateUserRequest);
+//    }
+@GetMapping()
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<List<UserResponse>> getAllUsers() {
+    List<UserResponse> users = userService.getAllUsers();
+    return ResponseEntity.ok(users);
+}
 }
