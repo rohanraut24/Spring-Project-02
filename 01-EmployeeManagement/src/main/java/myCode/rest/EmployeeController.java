@@ -9,10 +9,13 @@ import myCode.mapstruct.EmployeeMapper;
 import myCode.model.Employee;
 import myCode.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import myCode.dto.EmployeeDto;
 
 import java.util.List;
+
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -26,7 +29,7 @@ public class EmployeeController {
     public ResponseEntity<List<EmployeeDto>> getAllEmp(){
         return employeeService.getAllEmp();
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getAllEmp(@PathVariable Integer id){
         return employeeService.getEmployeeById(id);
