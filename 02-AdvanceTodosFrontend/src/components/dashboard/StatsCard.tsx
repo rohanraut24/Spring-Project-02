@@ -1,4 +1,4 @@
-const StatsCard: React.FC<{
+export const StatsCard: React.FC<{
   title: string;
   value: number;
   icon: React.ReactNode;

@@ -1,6 +1,9 @@
+import type { User } from "../types/auth.types";
+import type { Todo, TodoStats } from "../types/todo.types";
+
 const API_BASE_URL = 'http://localhost:8080/api';
 
-export class ApiService {
+class ApiService {
   private token: string | null = null;
 
   setToken(token: string | null) {
@@ -26,4 +29,71 @@ export class ApiService {
 
     return response.json();
   }
+
+  // Auth endpoints
+  async login(username: string, password: string) {
+    return this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+  }
+
+  async register(username: string, email: string, password: string) {
+    return this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, email, password }),
+    });
+  }
+
+  // User endpoints
+  async getCurrentUser(): Promise<User> {
+    return this.request('/users/me');
+  }
+
+  // Todo endpoints
+  async getTodos(): Promise<Todo[]> {
+    return this.request('/todos');
+  }
+
+  async createTodo(title: string, description: string): Promise<Todo> {
+    return this.request('/todos', {
+      method: 'POST',
+      body: JSON.stringify({ title, description, completed: false }),
+    });
+  }
+
+  async updateTodo(id: number, updates: Partial<Todo>): Promise<Todo> {
+    return this.request(`/todos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async deleteTodo(id: number): Promise<void> {
+    return this.request(`/todos/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async toggleTodo(id: number): Promise<void> {
+    return this.request(`/todos/${id}/toggle`, {
+      method: 'PATCH',
+    });
+  }
+
+  async getTodoStats(): Promise<TodoStats> {
+    return this.request('/todos/stats');
+  }
+
+  async searchTodos(title: string): Promise<Todo[]> {
+    return this.request(`/todos/search?title=${encodeURIComponent(title)}`);
+  }
+
+  async deleteCompletedTodos(): Promise<void> {
+    return this.request('/todos/completed', {
+      method: 'DELETE',
+    });
+  }
 }
+
+export const apiService = new ApiService();

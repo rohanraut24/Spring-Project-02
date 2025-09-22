@@ -1,4 +1,17 @@
-const Dashboard: React.FC = () => {
+import React, { useState, useEffect} from 'react';
+import { Search, Plus, Trash2, Check, X, BarChart3 } from 'lucide-react';
+import { Button } from '../components/common/Button';
+import { Toast } from '../components/common/Toast';
+import type { Todo, TodoStats } from '../types/todo.types';
+import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/api.service';
+import { StatsCard } from '../components/dashboard/StatsCard';
+import { Header } from '../components/layout/Header';
+import { Input } from '../components/common/Input';
+import { TodoItem } from '../components/dashboard/TodoItem';
+import { CreateTodoModal } from '../components/dashboard/CreateTodoModel';
+
+export const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [stats, setStats] = useState<TodoStats>({ totalTodos: 0, completedTodos: 0, pendingTodos: 0 });
@@ -24,6 +37,7 @@ const Dashboard: React.FC = () => {
       setIsLoading(true);
       const todosData = await apiService.getTodos();
       setTodos(todosData);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to load todos', 'error');
     } finally {
@@ -71,6 +85,7 @@ const Dashboard: React.FC = () => {
       setTodos(prev => [newTodo, ...prev]);
       loadStats();
       showToast('Todo created successfully!', 'success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to create todo', 'error');
     }
@@ -88,6 +103,7 @@ const Dashboard: React.FC = () => {
       setTodos(prev => prev.map(todo => todo.id === editTodo.id ? updatedTodo : todo));
       setEditTodo(null);
       showToast('Todo updated successfully!', 'success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to update todo', 'error');
     }
@@ -101,6 +117,7 @@ const Dashboard: React.FC = () => {
       ));
       loadStats();
       showToast('Todo updated!', 'success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to toggle todo', 'error');
     }
@@ -114,6 +131,7 @@ const Dashboard: React.FC = () => {
       setTodos(prev => prev.filter(todo => todo.id !== id));
       loadStats();
       showToast('Todo deleted successfully!', 'success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to delete todo', 'error');
     }
@@ -127,6 +145,7 @@ const Dashboard: React.FC = () => {
       setTodos(prev => prev.filter(todo => !todo.completed));
       loadStats();
       showToast('Completed todos deleted!', 'success');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       showToast('Failed to delete completed todos', 'error');
     }

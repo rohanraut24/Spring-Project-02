@@ -1,4 +1,7 @@
-const TodoItem: React.FC<{
+import { Check, Edit2, Trash2 } from "lucide-react";
+import type { Todo } from "../../types/todo.types";
+
+export const TodoItem: React.FC<{
   todo: Todo;
   onToggle: (id: number) => void;
   onEdit: (todo: Todo) => void;

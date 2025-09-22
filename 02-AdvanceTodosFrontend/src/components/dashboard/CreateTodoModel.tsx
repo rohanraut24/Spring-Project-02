@@ -1,4 +1,11 @@
-const CreateTodoModal: React.FC<{
+import { useEffect,useState } from "react";
+import { Modal } from "../common/Modal";
+import { Input } from "../common/Input";
+import { Textarea } from "../common/Textarea";
+import { Button } from "../common/Button";
+import type { Todo } from "../../types/todo.types";
+
+export const CreateTodoModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (title: string, description: string) => void;
