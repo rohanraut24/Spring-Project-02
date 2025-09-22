@@ -1,3 +1,6 @@
+import { useEffect,useState,useContext } from "react";
+import { ApiService } from "../services/api.service";
+
 export const AuthContext = createContext<AuthContextType>();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -62,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

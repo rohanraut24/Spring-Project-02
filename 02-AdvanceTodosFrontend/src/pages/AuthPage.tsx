@@ -1,4 +1,8 @@
-const AuthPage: React.FC = () => {
+import { LoginForm } from "../components/auth/LoginForm";
+import { RegisterForm } from "../components/auth/RegisterForm";
+import { useState } from "react";
+
+export const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
