@@ -1,11 +1,9 @@
-function App() {
+const App: React.FC = () => {
+  const { user, isLoading } = useAuth();
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
-  return (
-    <>
-      
-    </>
-  )
-}
-
-export default App
+  return user ? <Dashboard /> : <AuthPage />;
+};

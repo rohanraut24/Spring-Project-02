@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://localhost:8080/api';
 
-class ApiService {
+export class ApiService {
   private token: string | null = null;
 
   setToken(token: string | null) {
@@ -26,3 +26,4 @@ class ApiService {
 
     return response.json();
   }
+}

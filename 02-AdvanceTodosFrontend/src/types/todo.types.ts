@@ -1,4 +1,4 @@
-interface Todo {
+export interface Todo {
   id: number;
   title: string;
   description: string;
@@ -8,7 +8,7 @@ interface Todo {
   userId: number;
 }
 
-interface TodoStats {
+export interface TodoStats {
   totalTodos: number;
   completedTodos: number;
   pendingTodos: number;

@@ -1,4 +1,4 @@
-const Input: React.FC<{
+export const Input: React.FC<{
   type?: string;
   placeholder?: string;
   value: string;
