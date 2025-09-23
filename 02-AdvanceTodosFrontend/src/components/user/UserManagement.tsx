@@ -23,7 +23,7 @@ const UserManagement: React.FC<{ currentUser: UserData }> = ({ currentUser }) =>
     );
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   useEffect(() => {
     loadUsers();
   }, []);

@@ -3,7 +3,7 @@ import { LoadingScreen } from "./components/common/LoadingScreen";
 import { useAuth } from "./contexts/AuthContext";
 import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
-import { Settings } from "./pages/Settings"
+import { Settings } from "./pages/Settings" 
 
 export const App: React.FC = () => {
   const { user, isLoading } = useAuth();
