@@ -10,6 +10,7 @@ class ApiService {
     this.token = token;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
     const url = `${API_BASE_URL}${endpoint}`;
     const config: RequestInit = {

@@ -1,11 +1,11 @@
-import { Check, LogOut, Moon, Sun,} from "lucide-react";
+import { Check, LogOut, Moon, Sun, User,} from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
-import type { User } from "../../types/auth.types";
+import type { User as user} from "../../types/auth.types";
 
 
 
 export const Header: React.FC<{
-  user: User;
+  user: user;
   onLogout: () => void;
 }> = ({ user, onLogout }) => {
   const { isDark, toggleTheme } = useTheme();

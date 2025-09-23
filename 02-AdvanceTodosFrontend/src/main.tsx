@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Search, Plus, Edit2, Trash2, Check, X, User, Settings, LogOut, Moon, Sun, Filter, BarChart3 } from 'lucide-react';
 import './index.css';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { App } from './App';
 
 // Root Component with Providers
 const TodoApp: React.FC = () => {
