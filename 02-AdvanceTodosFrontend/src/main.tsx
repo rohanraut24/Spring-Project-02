@@ -1,4 +1,8 @@
 import React from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { createRoot } from "react-dom/client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BrowserRouter } from "react-router-dom";
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -21,8 +25,11 @@ const TodoApp: React.FC = () => {
 // Render the application
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <TodoApp />
+    <BrowserRouter>
+      <TodoApp />
+    </BrowserRouter>
   </React.StrictMode>
 );
+
 
 export default TodoApp;

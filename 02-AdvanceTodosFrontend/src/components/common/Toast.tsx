@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useEffect } from "react";
 
 export const Toast: React.FC<{

@@ -1,3 +1,5 @@
+import { X } from "lucide-react";
+
 export const Modal: React.FC<{
   isOpen: boolean;
   onClose: () => void;

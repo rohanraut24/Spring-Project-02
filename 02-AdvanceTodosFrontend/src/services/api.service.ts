@@ -95,6 +95,33 @@ class ApiService {
       method: 'DELETE',
     });
   }
+  async updateUser(id: number, updates: { username?: string; email?: string }) {
+  return this.request(`/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  });
+}
+
+async changePassword(currentPassword: string, newPassword: string) {
+  return this.request('/users/change-password', {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+}
+
+async deleteUser(id: number) {
+  return this.request(`/users/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+async getAllUsers(): Promise<User[]> {
+  return this.request('/users');
+}
+
+async getUserById(id: number): Promise<User> {
+  return this.request(`/users/${id}`);
+}
 }
 
 export const apiService = new ApiService();
