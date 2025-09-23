@@ -15,5 +15,4 @@ public class UpdateUserRequest {
 
     @Email(message="Email should be valid")
     private String email;
-
 }
