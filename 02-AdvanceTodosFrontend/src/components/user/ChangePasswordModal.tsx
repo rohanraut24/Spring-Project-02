@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { X, Lock } from 'lucide-react';
+import { X ,Lock} from "lucide-react";
+import React, { useState} from "react";
 
-const ChangePasswordModal: React.FC<{
+
+export const ChangePasswordModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (message: string) => void;
@@ -12,11 +13,13 @@ const ChangePasswordModal: React.FC<{
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Handle password change submission
   const handleSubmit = async () => {
     setError('');
     
-    if (newPassword.length < 6) {
-      setError('New password must be at least 6 characters');
+    // Validation
+    if (newPassword.length < 4) {
+      setError('New password must be at least 4 characters');
       return;
     }
 
@@ -27,6 +30,7 @@ const ChangePasswordModal: React.FC<{
 
     setIsLoading(true);
     try {
+      // API call to change password
       const response = await fetch('http://localhost:8080/api/users/change-password', {
         method: 'PUT',
         headers: {
@@ -37,15 +41,18 @@ const ChangePasswordModal: React.FC<{
       });
 
       if (!response.ok) {
-        throw new Error('Failed to change password');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to change password');
       }
       
+      // Success handling
       onSuccess('Password changed successfully!');
       onClose();
+      
+      // Reset form
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || 'Failed to change password');
     } finally {
@@ -58,6 +65,7 @@ const ChangePasswordModal: React.FC<{
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+        {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <Lock className="text-blue-600" size={20} />
@@ -71,7 +79,9 @@ const ChangePasswordModal: React.FC<{
           </button>
         </div>
         
+        {/* Modal Body */}
         <div className="p-6">
+          {/* Error Display */}
           {error && (
             <div className="bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-200 px-4 py-3 rounded mb-4">
               {error}
@@ -79,6 +89,7 @@ const ChangePasswordModal: React.FC<{
           )}
 
           <div className="space-y-4">
+            {/* Current Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Current Password
@@ -92,6 +103,7 @@ const ChangePasswordModal: React.FC<{
               />
             </div>
 
+            {/* New Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 New Password
@@ -105,6 +117,7 @@ const ChangePasswordModal: React.FC<{
               />
             </div>
 
+            {/* Confirm Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Confirm New Password
@@ -118,13 +131,21 @@ const ChangePasswordModal: React.FC<{
               />
             </div>
 
+            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleSubmit}
                 disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isLoading ? 'Changing...' : 'Change Password'}
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <Lock size={16} />
+                    Change Password
+                  </>
+                )}
               </button>
               <button
                 onClick={onClose}
@@ -139,5 +160,3 @@ const ChangePasswordModal: React.FC<{
     </div>
   );
 };
-
-export default ChangePasswordModal;

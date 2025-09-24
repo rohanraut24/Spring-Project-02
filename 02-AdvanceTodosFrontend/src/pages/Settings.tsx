@@ -1,276 +1,311 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+// src/pages/Settings.tsx
+import React, { useState, useEffect } from "react";
+import { User, Lock,Shield,Trash2,Edit2,AlertTriangle,X,Settings as SettingsIcon,Save,Mail,UserCheck} from "lucide-react";
+import { AdminPanel } from "../components/user/AdminPanel";
+import { ChangePasswordModal } from "../components/user/ChangePasswordModal";
 
-// User Types
-interface UserResponse {
+// ==================== INTERFACES ====================
+export interface UserData {
   id: number;
   username: string;
   email: string;
+  userRole: 'USER' | 'ADMIN';
 }
 
-// Todo Types
-interface TodoResponse {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
+export interface Toast {
+  message: string;
+  type: 'success' | 'error';
 }
 
-// Stats
-interface TodoStatsResponse {
-  total: number;
-  completed: number;
-  pending: number;
-}
+export const Settings: React.FC<{ user?: UserData; onLogout?: () => void }> = ({ 
+  user, 
+  onLogout = () => {} 
+}) => {
+  // Component state
+  const [currentUser, setCurrentUser] = useState<UserData | null>(user || null);
+  const [toast, setToast] = useState<Toast | null>(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Form states for editing profile
+  const [editUsername, setEditUsername] = useState(currentUser?.username || '');
+  const [editEmail, setEditEmail] = useState(currentUser?.email || '');
 
-export const Settings: React.FC = () => {
-  // User State
-  const [user, setUser] = useState<UserResponse | null>(null);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-
-  // Todos State
-  const [todos, setTodos] = useState<TodoResponse[]>([]);
-  const [newTodoTitle, setNewTodoTitle] = useState("");
-  const [newTodoDesc, setNewTodoDesc] = useState("");
-  const [stats, setStats] = useState<TodoStatsResponse | null>(null);
-
-  // Fetch current user and todos
+  // Load current user if not provided
   useEffect(() => {
-    axios.get("/api/users/me")
-      .then(res => {
-        setUser(res.data);
-        setUsername(res.data.username);
-        setEmail(res.data.email);
-      })
-      .catch(err => console.error(err));
+    if (!user) {
+      loadCurrentUser();
+    } else {
+      setCurrentUser(user);
+      setEditUsername(user.username);
+      setEditEmail(user.email);
+    }
+  }, [user]);
 
-    fetchTodos();
-    fetchTodoStats();
-  }, []);
+  // Function to load current user from backend
+  const loadCurrentUser = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/users/me', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
 
-  const fetchTodos = () => {
-    axios.get("/api/todos")
-      .then(res => setTodos(res.data))
-      .catch(err => console.error(err));
-  };
-
-  const fetchTodoStats = () => {
-    axios.get("/api/todos/stats")
-      .then(res => setStats(res.data))
-      .catch(err => console.error(err));
-  };
-
-  // User Functions
-  const handleUpdateUser = () => {
-    if (!user) return;
-    axios.put(`/api/users/${user.id}`, { username, email })
-      .then(res => {
-        alert(res.data.message);
-        setUser({ ...user, username, email });
-      })
-      .catch(err => console.error(err));
-  };
-
-  const handleChangePassword = () => {
-    axios.put("/api/users/change-password", { oldPassword, newPassword })
-      .then(res => alert(res.data.message))
-      .catch(err => console.error(err));
-  };
-
-  const handleDeleteAccount = () => {
-    if (!user) return;
-    if (window.confirm("Are you sure you want to delete your account?")) {
-      axios.delete(`/api/users/${user.id}`)
-        .then(res => {
-          alert(res.data.message);
-          // Redirect or clear user state
-          setUser(null);
-        })
-        .catch(err => console.error(err));
+      if (response.ok) {
+        const userData = await response.json();
+        setCurrentUser(userData);
+        setEditUsername(userData.username);
+        setEditEmail(userData.email);
+      }
+    } catch (error) {
+      showToast('Failed to load user data', 'error');
     }
   };
 
-  // Todo Functions
-  const handleCreateTodo = () => {
-    axios.post("/api/todos", { title: newTodoTitle, description: newTodoDesc })
-      .then(() => {
-        setNewTodoTitle("");
-        setNewTodoDesc("");
-        fetchTodos();
-        fetchTodoStats();
-      })
-      .catch(err => console.error(err));
+  // Function to show toast notifications
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    // Auto hide toast after 3 seconds
+    setTimeout(() => setToast(null), 3000);
   };
 
-  const handleUpdateTodo = (id: number, title: string, description: string) => {
-    axios.put(`/api/todos/${id}`, { title, description })
-      .then(() => fetchTodos())
-      .catch(err => console.error(err));
+  // Function to handle profile update
+  const handleUpdateProfile = async () => {
+    if (!currentUser) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${currentUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          username: editUsername,
+          email: editEmail
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
+
+      // Update local state
+      const updatedUser = { ...currentUser, username: editUsername, email: editEmail };
+      setCurrentUser(updatedUser);
+      setIsEditing(false);
+      showToast('Profile updated successfully!', 'success');
+    } catch (error: any) {
+      showToast(error.message || 'Failed to update profile', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleToggleTodo = (id: number) => {
-    axios.patch(`/api/todos/${id}/toggle`)
-      .then(() => {
-        fetchTodos();
-        fetchTodoStats();
-      })
-      .catch(err => console.error(err));
+  // Function to cancel editing
+  const handleCancelEdit = () => {
+    if (currentUser) {
+      setEditUsername(currentUser.username);
+      setEditEmail(currentUser.email);
+    }
+    setIsEditing(false);
   };
 
-  const handleDeleteTodo = (id: number) => {
-    axios.delete(`/api/todos/${id}`)
-      .then(() => {
-        fetchTodos();
-        fetchTodoStats();
-      })
-      .catch(err => console.error(err));
-  };
-
-  const handleDeleteCompletedTodos = () => {
-    axios.delete("/api/todos/completed")
-      .then(() => {
-        fetchTodos();
-        fetchTodoStats();
-      })
-      .catch(err => console.error(err));
-  };
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading user settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Settings</h1>
-
-      {/* User Section */}
-      {user && (
-        <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">User Profile</h2>
-          
-          <input
-            type="text"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder="Username"
-            className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Email"
-            className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-          />
-          <button
-            onClick={handleUpdateUser}
-            className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Update Profile
-          </button>
-
-          <div className="mt-4">
-            <input
-              type="password"
-              value={oldPassword}
-              onChange={e => setOldPassword(e.target.value)}
-              placeholder="Old Password"
-              className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <input
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              placeholder="New Password"
-              className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              onClick={handleChangePassword}
-              className="mr-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Change Password
-            </button>
-          </div>
-
-          <div className="mt-4">
-            <button
-              onClick={handleDeleteAccount}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Delete Account
-            </button>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Page Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <SettingsIcon className="text-blue-600" size={32} />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
         </div>
-      )}
 
-      {/* Todo Section */}
-      <div className="p-6 bg-white dark:bg-gray-800 rounded shadow">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Todos</h2>
+        {/* Profile Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+          {/* Profile Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                <User className="text-white" size={28} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Profile Information</h2>
+                <p className="text-gray-600 dark:text-gray-400">Manage your account details</p>
+              </div>
+            </div>
+            
+            {/* Edit Button */}
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Edit2 size={16} />
+                Edit Profile
+              </button>
+            )}
+          </div>
 
-        {/* Stats */}
-        {stats && (
-          <div className="mb-4 text-gray-700 dark:text-gray-300">
-            <p>Total: {stats.total}</p>
-            <p>Completed: {stats.completed}</p>
-            <p>Pending: {stats.pending}</p>
+          {/* Profile Form */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Username Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <UserCheck className="inline mr-2" size={16} />
+                Username
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editUsername}
+                  onChange={(e) => setEditUsername(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              ) : (
+                <div className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
+                  {currentUser.username}
+                </div>
+              )}
+            </div>
+
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Mail className="inline mr-2" size={16} />
+                Email
+              </label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              ) : (
+                <div className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
+                  {currentUser.email}
+                </div>
+              )}
+            </div>
+
+            {/* Role Field (Read-only) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Shield className="inline mr-2" size={16} />
+                Role
+              </label>
+              <div className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                  currentUser.userRole === 'ADMIN' 
+                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                }`}>
+                  {currentUser.userRole}
+                </span>
+              </div>
+            </div>
+
+            {/* User ID Field (Read-only) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                User ID
+              </label>
+              <div className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
+                {currentUser.id}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons for Editing */}
+          {isEditing && (
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+              <button
+                onClick={handleUpdateProfile}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Save size={16} />
+                )}
+                Save Changes
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Security Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Lock className="text-orange-600" size={24} />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Security</h2>
+              <p className="text-gray-600 dark:text-gray-400">Keep your account secure</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setShowChangePassword(true)}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Lock size={18} />
+            Change Password
+          </button>
+        </div>
+
+        {/* Admin Panel Section - Only show for ADMIN users */}
+        {currentUser.userRole === 'ADMIN' && (
+          <div className="mb-6">
+            <AdminPanel currentUser={currentUser} />
           </div>
         )}
 
-        {/* Add Todo */}
-        <div className="mb-4">
-          <input
-            type="text"
-            value={newTodoTitle}
-            onChange={e => setNewTodoTitle(e.target.value)}
-            placeholder="Title"
-            className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-          />
-          <input
-            type="text"
-            value={newTodoDesc}
-            onChange={e => setNewTodoDesc(e.target.value)}
-            placeholder="Description"
-            className="mb-2 w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-          />
-          <button
-            onClick={handleCreateTodo}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Add Todo
-          </button>
-          <button
-            onClick={handleDeleteCompletedTodos}
-            className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Delete Completed
-          </button>
-        </div>
+        {/* Change Password Modal */}
+        <ChangePasswordModal
+          isOpen={showChangePassword}
+          onClose={() => setShowChangePassword(false)}
+          onSuccess={(message) => showToast(message, 'success')}
+        />
 
-        {/* List Todos */}
-        {todos.map(todo => (
-          <div
-            key={todo.id}
-            className="mb-2 p-2 border rounded flex justify-between items-center dark:bg-gray-700"
-          >
-            <div>
-              <p className={`font-semibold ${todo.completed ? "line-through text-green-400" : ""}`}>{todo.title}</p>
-              <p className="text-gray-500 dark:text-gray-300">{todo.description}</p>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleToggleTodo(todo.id)}
-                className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+            toast.type === 'success' 
+              ? 'bg-green-600 text-white' 
+              : 'bg-red-600 text-white'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span>{toast.message}</span>
+              <button 
+                onClick={() => setToast(null)}
+                className="hover:opacity-75 ml-2"
               >
-                Toggle
-              </button>
-              <button
-                onClick={() => handleDeleteTodo(todo.id)}
-                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Delete
+                <X size={16} />
               </button>
             </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
