@@ -72,6 +72,10 @@ desktop.ini
 *.local
 application-*.yml
 application-*.properties
+.env
+.env.production
+.env.local
+*.env
 
 ######################
 # Maven Wrapper
