@@ -27,7 +27,7 @@ services:
   # Spring Boot Backend
   backend:
     build:
-      context: ./backend
+      context: ./02-AdvanceTodosBackend
       dockerfile: Dockerfile
     container_name: todo-backend
     restart: unless-stopped
@@ -56,7 +56,7 @@ services:
   # React Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ./02-AdvanceTodosFrontend
       dockerfile: Dockerfile
     container_name: todo-frontend
     restart: unless-stopped
