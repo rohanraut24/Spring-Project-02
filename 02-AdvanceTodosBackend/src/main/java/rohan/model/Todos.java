@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -33,14 +34,11 @@ public class Todos {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false ,updatable = false ,insertable = false)
-//    @CreationTimestamp  //Don't need this because I already declared it in database
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime created_at;
 
-    @Column(name="updated_at",nullable = false ,insertable = false)
-//    @UpdateTimestamp //Don't need this because I already declared it in database
-//    ADD COLUMN updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;  //In DB
-    //Updated through db is not working properly
+    @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updated_at;
 }

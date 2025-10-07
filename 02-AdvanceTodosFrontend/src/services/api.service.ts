@@ -1,7 +1,8 @@
 import type { User } from "../types/auth.types";
 import type { Todo, TodoStats } from "../types/todo.types";
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// Update API_BASE_URL to use environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 class ApiService {
   private token: string | null = null;

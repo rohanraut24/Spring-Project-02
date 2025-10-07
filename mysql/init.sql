@@ -8,21 +8,22 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     user_role ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
 );
 
--- Create todos table
 CREATE TABLE IF NOT EXISTS todos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     completed BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
 
 -- Insert sample admin user (password: admin123)
 INSERT IGNORE INTO users (username, email, password, user_role) VALUES 

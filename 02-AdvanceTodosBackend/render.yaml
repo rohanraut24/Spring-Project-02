@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: todo-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://dpg-xxxxx.oregon-postgres.render.com:5432/todo_db
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: todo-mysql
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: todo-mysql
+          property: password
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
